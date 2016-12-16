@@ -14,7 +14,6 @@ router.get('/', function allJobs(req, res) {
 });
 
 router.get('/:id', function getSingleJob(req, res){
-  console.log(req.params.id);
   jobsModel.getOne(req.params.id, function dataRetrieved(err, data) {
     if(err) {
       console.error(err);
@@ -32,6 +31,16 @@ router.post('/', function createJobbie(req, res){
       return;
     }
     console.log("Data that came back from the callbackin route", data);
+    res.json(data);
+  });
+});
+
+router.delete('/:id', function deleteJob(req, res) {
+  jobsModel.destroy(req.params.id, function dataDeleted(err, data) {
+    if(err) {
+      console.error(err);
+      return;
+    }
     res.json(data);
   });
 });
