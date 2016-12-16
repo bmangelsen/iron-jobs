@@ -15,8 +15,17 @@ function getAll(done) {
       return;
     }
     db.collection('jobs')
-      .find(null, {notes: 0, createTime: 0} ) // sets up query
-      .toArray(done); //gives us query as array
+      .find()
+      .toArray(function completedArray(err, data) {
+        var cleanData = data.map(function jobMap(data) {
+          return {
+            "id": data._id,
+            "company": data.company,
+            "link": data.link,
+          };
+        });
+      done(err, cleanData);
+      });
   });
 }
 
@@ -27,12 +36,20 @@ function getOne(id, done) {
       return;
     }
     db.collection('jobs')
-      .findOne({ "_id" : ObjectId(id)}, function foundObject(err, foundJob) {
+      .findOne({ "_id" : new ObjectId(id)}, function foundObject(err, foundJob) {
         if (err) {
           done(err);
           return;
         }
-        done(null, foundJob);
+        jobData = {
+          "id": foundJob._id,
+          "company": foundJob.company,
+          "notes": foundJob.notes,
+          "link": foundJob.link,
+          "createTime": foundJob.createTime
+        };
+        console.log(jobData);
+        done(null, jobData);
       });
   });
 }
@@ -55,10 +72,7 @@ function destroy(id, done) {
         done(err);
         return;
       }
-
       getOne(id, function returnAndDeleteJob(err, job) {
-
-
         db.collection('jobs').remove({'_id': job._id}, function deletedJoh(err, numberDeleted) {
           if (err) {
             done(err);
@@ -67,8 +81,6 @@ function destroy(id, done) {
           console.log("found job", job);
           done(null, numberDeleted);
         });
-
       });
-
     });
 }

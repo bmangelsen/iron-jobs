@@ -30,8 +30,15 @@ router.post('/', function createJobbie(req, res){
       console.error(err);
       return;
     }
-    console.log("Data that came back from the callbackin route", data);
-    res.json(data);
+    console.log(data);
+    res.json(
+      {
+        "id": data.ops[0]._id,
+        "company": data.ops[0].company,
+        "notes": data.ops[0].notes,
+        "link": data.ops[0].link,
+        "createTime": data.ops[0].createTime
+      });
   });
 });
 
